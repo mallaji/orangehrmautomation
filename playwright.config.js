@@ -72,11 +72,11 @@ module.exports = defineConfig({
     // },
   ],
   /* Configure web server */
-  webServer: process.env.CI
-    ? {
-        command: "npm run start",
-        url: process.env.BASE_URL || "http://localhost:3000",
-        reuseExistingServer: true,
-      }
-    : undefined,
+  // webServer: process.env.CI
+  //   ? {
+  //       command: "npm run start",
+  //       url: process.env.BASE_URL || "http://localhost:3000",
+  //       reuseExistingServer: true,
+  //     }
+  //   : undefined,
 });
