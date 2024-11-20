@@ -10,4 +10,4 @@ COPY . /app
 RUN npm install
 
 # Default command to run the Playwright test in headless mode
-CMD ["npx", "playwright", "test", "./tests/login.test.js"]
+CMD ["npx", "playwright", "test", "./tests/adduser.test.js"]
