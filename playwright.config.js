@@ -1,111 +1,82 @@
 import dotenv from "dotenv";
-const { defineConfig, devices } = require('@playwright/test');
+const { defineConfig, devices } = require("@playwright/test");
 
 dotenv.config();
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
 
 /**
+ * Playwright Configuration File
  * @see https://playwright.dev/docs/test-configuration
  */
 module.exports = defineConfig({
-  projects:[
-    {
-      name: 'tests',
-      testDir: './tests',
-    },
-    {
-      name: 'orangehrmtests',
-      testDir: './orangehrmtests',
-      use: { ...devices['Desktop Chrome'], trace: 'on-first-retry' },
-      reporter: [['junit', { outputFile: 'results.xml' }]],
-    },
-  ],
-  //testDir: './orangehrmtest',
+  testDir: "./tests", // Define the base directory for tests
   /* Run tests in files in parallel */
   fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
+  /* Fail the build on CI if you accidentally left test.only in the source code */
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
-  //retries: 1,
-  /* Opt out of parallel tests on CI. */
+  /* Retry failed tests (configurable based on environment) */
+  retries: process.env.CI ? 2 : 1,
+  /* Workers for parallel execution */
   workers: process.env.CI ? 1 : undefined,
-  // Directory for baseline screenshots
-  snapshotDir: './screenshots',
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [["html"]],
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  /* Default screenshot directory */
+  snapshotDir: "./screenshots",
+  /* Default reporters */
+  reporter: [
+    ["html"], // HTML report for local viewing
+    ["junit", { outputFile: "test-results/results.xml" }], // JUnit for CI integration
+  ],
+  /* Shared settings for all projects */
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    // baseURL: 'http://127.0.0.1:3000',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure', // Capture screenshots only on test failure
+    /* Base URL for tests */
+    baseURL: process.env.BASE_URL || "http://localhost:3000",
+    /* Collect trace on failure */
+    trace: "on-first-retry",
+    /* Capture screenshots on failure */
+    screenshot: "only-on-failure",
   },
-
-  /* Configure projects for major browsers */
+  /* Define projects for different test groups */
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome']
-      ,screenshot:"off",
-      video:"off",
-    trace:"off" },
+      name: "tests",
+      testDir: "./tests",
     },
+    {
+      name: "orangehrmtests",
+      testDir: "./orangehrmtests",
+      use: { ...devices["Desktop Chrome"], trace: "on-first-retry" },
+    },
+    {
+      name: "chromium",
+      use: {
+        ...devices["Desktop Chrome"],
+        screenshot: "off",
+        video: "off",
+        trace: "off",
+      },
+    },
+    // Uncomment these for other browsers or devices as needed
     // {
-    //   name: 'iPhone 12',
-    //   use: {
-    //     ...devices['iPhone 12'],
-    //   },
+    //   name: "firefox",
+    //   use: { ...devices["Desktop Firefox"] },
     // },
     // {
-    //   name: 'Pixel 5',
-    //   use: {
-    //     ...devices['Pixel 5'],
-    //   },
-    // },
-
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
-
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
+    //   name: "webkit",
+    //   use: { ...devices["Desktop Safari"] },
     // },
     // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+    //   name: "mobile-chrome",
+    //   use: { ...devices["Pixel 5"] },
     // },
     // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+    //   name: "mobile-safari",
+    //   use: { ...devices["iPhone 12"] },
     // },
   ],
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://127.0.0.1:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
+  /* Configure web server */
+  webServer: process.env.CI
+    ? {
+        command: "npm run start",
+        url: process.env.BASE_URL || "http://localhost:3000",
+        reuseExistingServer: true,
+      }
+    : undefined,
 });
-
