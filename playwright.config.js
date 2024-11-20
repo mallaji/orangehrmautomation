@@ -21,6 +21,7 @@ module.exports = defineConfig({
       name: 'orangehrmtests',
       testDir: './orangehrmtests',
       use: { ...devices['Desktop Chrome'], trace: 'on-first-retry' },
+      reporter: [['junit', { outputFile: 'results.xml' }]],
     },
   ],
   //testDir: './orangehrmtest',
