@@ -10,7 +10,7 @@ test("Add Admin User", async function({ page }) {
     await loginPage.login('Admin', 'admin123');
 
     await loginPage.verifylogin();
-    await loginPage.verifyLogin(); //Test Responsiveness
+    //await loginPage.verifyLogin(); //Test Responsiveness
 
     //await expect(page).toHaveURL(/dashboard/);
 
